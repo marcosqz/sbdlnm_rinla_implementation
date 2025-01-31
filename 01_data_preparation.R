@@ -10,6 +10,7 @@
 # additionally supplied (input/result_inla folder). We provide here the 
 # implementation of B-DLNMs and SB-DLNMS in R-INLA, a significantly faster and 
 # user-friendly software compared to WinBUGS.
+# We used R version 4.4.2 and INLA version 24.12.11
 ################################################################################
 
 ################################################################################
@@ -59,7 +60,8 @@ dlnm_var <- list(
 
 df_seas <- 4
 df_trend_10years <- 1 # 1 df every 10 years to control for long-term trends
-df_trend <- round(length(min(year(data$date)):max(year(data$date))) / df_trend_10years / 10) # Here we assume the time period for all regions is the same
+df_trend <- round(
+  length(min(year(data$date)):max(year(data$date))) / df_trend_10years / 10) # Here we assume the time period for all regions is the same
 rm(df_trend_10years)
 
 dlnm_var$df_seas <- df_seas

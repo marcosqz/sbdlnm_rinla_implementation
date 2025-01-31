@@ -10,6 +10,7 @@
 # additionally supplied (input/result_inla folder). We provide here the 
 # implementation of B-DLNMs and SB-DLNMS in R-INLA, a significantly faster and 
 # user-friendly software compared to WinBUGS.
+# We used R version 4.4.2 and INLA version 24.12.11
 ################################################################################
 
 ################################################################################

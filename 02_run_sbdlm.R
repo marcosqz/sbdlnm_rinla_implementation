@@ -10,6 +10,7 @@
 # additionally supplied (input/result_inla folder). We provide here the 
 # implementation of B-DLNMs and SB-DLNMS in R-INLA, a significantly faster and 
 # user-friendly software compared to WinBUGS.
+# We used R version 4.4.2 and INLA version 24.12.11
 ################################################################################
 
 ################################################################################
@@ -26,7 +27,12 @@
 
 # Load libraries
 library(INLA)
-inla.setOption("num.threads", 10)
+
+# 10 threads were used to generate the results
+# Use "inla.setOption("num.threads", 10)" only if your computer has at least 
+# 10 threads
+
+# inla.setOption("num.threads", 10)
 
 # Load data for case-crossover design
 load("output/data_casecrossover.RData")
@@ -197,25 +203,22 @@ rm(inla_formula, inla_model, inla_res, cb_res)
 
 ### INLA - MODEL 3 SB-DLNM – case-crossover design
 
-# Citation Leroux in INLA: Urtasun, Aritz Adin, María Dolores Ugarte Martínez, and Tomás Goicoa Mangado. Hierarchical and spline-based models in space-time disease mapping. Diss. Dissertation, Universidad Publica de Navarra, Spain, 2017.
-sdunif = "expression: logdens=log(0.5)-log_precision/2; return(logdens);"
-
 inla_formula <- mort ~ -1 + 
   cb1 + cb2 + cb3 + cb4 + cb5 + cb6 + 
   cb7 + cb8 + cb9 + cb10 + cb11 + cb12 +
   f(strata, model = "iid", hyper = list(prec = list(initial = log(1e-04), fixed = TRUE))) + 
-  f(id_cb1, cb1, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif))) + 
-  f(id_cb2, cb2, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif))) + 
-  f(id_cb3, cb3, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif))) + 
-  f(id_cb4, cb4, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif))) + 
-  f(id_cb5, cb5, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif))) + 
-  f(id_cb6, cb6, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif))) + 
-  f(id_cb7, cb7, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif))) + 
-  f(id_cb8, cb8, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif))) + 
-  f(id_cb9, cb9, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif))) + 
-  f(id_cb10, cb10, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif))) + 
-  f(id_cb11, cb11, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif))) + 
-  f(id_cb12, cb12, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif)))
+  f(id_cb1, cb1, model = "bym2", graph = list_neig) + 
+  f(id_cb2, cb2, model = "bym2", graph = list_neig) +
+  f(id_cb3, cb3, model = "bym2", graph = list_neig) + 
+  f(id_cb4, cb4, model = "bym2", graph = list_neig) +
+  f(id_cb5, cb5, model = "bym2", graph = list_neig) + 
+  f(id_cb6, cb6, model = "bym2", graph = list_neig) +
+  f(id_cb7, cb7, model = "bym2", graph = list_neig) +
+  f(id_cb8, cb8, model = "bym2", graph = list_neig) +
+  f(id_cb9, cb9, model = "bym2", graph = list_neig) +
+  f(id_cb10, cb10, model = "bym2", graph = list_neig) + 
+  f(id_cb11, cb11, model = "bym2", graph = list_neig) +
+  f(id_cb12, cb12, model = "bym2", graph = list_neig)
 
 # In order to sample from the posterior distribution model need to be fitted 
 # with config = TRUE
@@ -272,26 +275,22 @@ rm(sdunif, inla_formula, inla_model, inla_res, cb_res)
 
 ### INLA - MODEL 4 SB-DLNM – time-series design
 
-# Citation Leroux in INLA: Urtasun, Aritz Adin, María Dolores Ugarte Martínez, and Tomás Goicoa Mangado. Hierarchical and spline-based models in space-time disease mapping. Diss. Dissertation, Universidad Publica de Navarra, Spain, 2017.
-
-sdunif = "expression: logdens=log(0.5)-log_precision/2; return(logdens);"
-
 inla_formula <- mort ~ -1 + 
   cb1 + cb2 + cb3 + cb4 + cb5 + cb6 + 
   cb7 + cb8 + cb9 + cb10 + cb11 + cb12 +
   f(intercept_dow, model = "iid", hyper = list(prec = list(initial = log(1e-04), fixed = TRUE))) +
-  f(id_cb1, cb1, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif))) + 
-  f(id_cb2, cb2, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif))) + 
-  f(id_cb3, cb3, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif))) + 
-  f(id_cb4, cb4, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif))) + 
-  f(id_cb5, cb5, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif))) + 
-  f(id_cb6, cb6, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif))) + 
-  f(id_cb7, cb7, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif))) + 
-  f(id_cb8, cb8, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif))) + 
-  f(id_cb9, cb9, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif))) + 
-  f(id_cb10, cb10, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif))) + 
-  f(id_cb11, cb11, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif))) + 
-  f(id_cb12, cb12, model = "bym", graph = list_neig, hyper = list(prec.unstruct = list(prior = sdunif), prec.spatial = list(prior = sdunif))) + 
+  f(id_cb1, cb1, model = "bym2", graph = list_neig) + 
+  f(id_cb2, cb2, model = "bym2", graph = list_neig) + 
+  f(id_cb3, cb3, model = "bym2", graph = list_neig) + 
+  f(id_cb4, cb4, model = "bym2", graph = list_neig) + 
+  f(id_cb5, cb5, model = "bym2", graph = list_neig) + 
+  f(id_cb6, cb6, model = "bym2", graph = list_neig) + 
+  f(id_cb7, cb7, model = "bym2", graph = list_neig) + 
+  f(id_cb8, cb8, model = "bym2", graph = list_neig) + 
+  f(id_cb9, cb9, model = "bym2", graph = list_neig) + 
+  f(id_cb10, cb10, model = "bym2", graph = list_neig) + 
+  f(id_cb11, cb11, model = "bym2", graph = list_neig) + 
+  f(id_cb12, cb12, model = "bym2", graph = list_neig) + 
   f(id_trend, trend, model = "iid", hyper = list(prec = list(initial = log(1e-04), fixed = TRUE))) +
   seas1:factor(id_year1):factor(id_region1) + 
   seas2:factor(id_year2):factor(id_region2) +
